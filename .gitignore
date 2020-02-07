@@ -1,0 +1,6 @@
+libs/*
+statistical-burger_files/*
+
+*.html
+
+.Rproj.user

@@ -1,0 +1,54 @@
+---
+title: "Statistical Burger"
+subtitle: "Statistical Learning with Food"
+author: "Otho Mantegazza"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    seal: false
+    lib_dir: libs
+    css: "css/remark.css"
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      ratio: '16:9'
+editor_options: 
+  chunk_output_type: console
+---
+
+class: title-acc
+
+# Statistical Burger
+
+## Statistical Learning with Food
+
+### Otho
+
+---
+
+Y ~ X
+
+---
+
+Y ~ X1 + e
+
+---
+
+Y ~ X1 + X2 + e
+
+---
+
+Y ~ X1 + X2 + X3*X4 + e
+
+---
+
+```{r}
+library(tidyverse)
+
+read_
+
+```
+
+
+https://www.kaggle.com/tags/food-and-drink 

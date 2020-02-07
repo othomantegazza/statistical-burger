@@ -1,0 +1,181 @@
+/* Modified from the default css that comes from remark.js - xaringan */
+/* https://github.com/yihui/xaringan */
+
+/*from default fonts*/
+
+@import url('https://fonts.googleapis.com/css?family=IBM+Plex+Sans:300,300i&display=swap');
+
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+}
+
+/*From default.css*/
+
+a, a > code {
+  color: rgb(249, 38, 114);
+  text-decoration: none;
+}
+.footnote {
+  position: absolute;
+  bottom: 3em;
+  padding-right: 4em;
+  font-size: 90%;
+}
+.remark-code-line-highlighted     { background-color: #ffff88; }
+
+.inverse {
+  background-color: #272822;
+  color: #d6d6d6;
+  text-shadow: 0 0 20px #333;
+}
+.inverse h1, .inverse h2, .inverse h3 {
+  color: #f3f3f3;
+}
+/* Two-column layout */
+.left-column {
+  color: #777;
+  width: 20%;
+  height: 92%;
+  float: left;
+}
+.left-column h2:last-of-type, .left-column h3:last-child {
+  color: #000;
+}
+.right-column {
+  width: 75%;
+  float: right;
+  padding-top: 1em;
+}
+.pull-left {
+  float: left;
+  width: 47%;
+}
+.pull-right {
+  float: right;
+  width: 47%;
+}
+.pull-right ~ * {
+  clear: both;
+}
+img, video, iframe {
+  max-width: 100%;
+}
+blockquote {
+  border-left: solid 5px lightgray;
+  padding-left: 1em;
+}
+.remark-slide table {
+  margin: auto;
+  border-top: 1px solid #666;
+  border-bottom: 1px solid #666;
+}
+.remark-slide table thead th { border-bottom: 1px solid #ddd; }
+th, td { padding: 5px; }
+.remark-slide thead, .remark-slide tfoot, .remark-slide tr:nth-child(even) { background: #eee }
+
+@page { margin: 0; }
+@media print {
+  .remark-slide-scaler {
+    width: 100% !important;
+    height: 100% !important;
+    transform: scale(1) !important;
+    top: 0 !important;
+    left: 0 !important;
+  }
+}
+
+/* Extra ------------------------------------------------------- */
+
+/* Normal slide */
+
+.remark-slide-content h1 {
+  font-size: 40px;
+}
+
+/* Title slide ----------------------- */
+.title-acc {
+  background-image: linear-gradient(to right, #0022ff, #9000ff);
+  text-shadow: none;
+  color: #ffffff;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.header {
+  position: absolute; 
+  top: 50px;
+  left: 80px;
+  background-color: #FFFFFF22;
+  padding: 5px 10px 5px 10px;
+}
+
+.title-acc h1 {
+  text-align: left;
+  font-size: 50px;
+  margin-bottom: 20px;
+  margin-left: 50px;
+}
+
+.title-acc h2 {
+  text-align: left;
+  font-size: 24px;
+  margin-bottom: 20px;
+  margin-left: 50px;
+}
+
+.title-acc h3 {
+  margin-left: 55px;
+  font-size: 24px;
+  text-align: left;
+}
+
+/* Side ----------------------------------------------*/
+
+.side-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3%;
+  height: 100%;
+  background-image: linear-gradient(to bottom, #0022ff, #9000ff);
+}
+
+.title-acc .side-bar { 
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3%;
+  height: 100%;
+  background-image: linear-gradient(to bottom, #0022ff00, #9000ff00);
+}
+
+/* Splits --------------------------------------------*/
+
+.split-40>.column:first-of-type {
+  width: 40%;
+  height:100%;
+  position: absolute;
+  top: 0;
+  left: 0; }
+
+.split-40>.column:nth-of-type(2) {
+  width: 60%;
+  height:100%;
+  position: absolute;
+  top: 0;
+  right: 0;}
+
+  .pull-left-reveal {
+    float: left;
+    width: 35%;
+  }
+  .pull-right-reveal {
+    float: right;
+    width: 60%;
+    font-size: 15px;
+  }
+
+.remark-code-line-highlighted {
+  border-radius: 7px;
+  background-image: linear-gradient(to right, rgb(251, 241, 193), #ffffff) !important;
+}
