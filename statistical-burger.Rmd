@@ -73,6 +73,12 @@ class: middle
 ---
 
 ```{r}
+adv_fit_poly <- lm(sales ~ poly(tv, 2), data = adv)
+
+adv <- 
+  adv %>% 
+  left_join(broom::augment(adv_fit_poly))
+
 p <- 
 adv %>% 
   ggplot(aes(x = tv,
@@ -104,6 +110,16 @@ p_guess <-
   annotate(geom = "point", x = 140, y = 0, colour = "red", shape = 4, size = 6)
 
 p_guess
+```
+
+---
+
+```{r}
+p_guess +
+  annotate(geom = "point", x = 140,
+           y = predict(adv_fit_poly, newdata = tibble(tv = 140)),
+           colour = "red", size = 6) 
+
 ```
 
 
