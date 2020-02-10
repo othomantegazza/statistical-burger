@@ -1,5 +1,6 @@
 libs/*
 statistical-burger_files/*
+data/*
 
 *.html
 

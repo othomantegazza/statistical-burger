@@ -17,6 +17,26 @@ editor_options:
   chunk_output_type: console
 ---
 
+```{r, include=FALSE}
+knitr::opts_chunk$set(dev = "svglite",
+                      echo = FALSE,
+                      message = FALSE,
+                      warning = FALSE)
+
+library(tidyverse)
+library(ISLR)
+# library(MASS)
+library(caret)
+
+theme_set(theme_minimal())
+
+adv <-
+  read_csv(here::here("data/adv.csv")) %>% 
+  janitor::clean_names() %>% 
+  select(-x1)
+```
+
+
 class: title-acc
 
 # Statistical Burger
@@ -27,27 +47,59 @@ class: title-acc
 
 ---
 
-Y ~ X
+class: middle
+
+.big-formula[Y ~ X]
 
 ---
 
-Y ~ X1 + e
+class: middle
+
+.big-formula[Y ~ X + ε]
 
 ---
 
-Y ~ X1 + X2 + e
+class: middle
+
+.big-formula[Y ~ X1 + X2 + ε]
 
 ---
+class: middle
 
-Y ~ X1 + X2 + X3*X4 + e
+.big-formula[Y ~ X1 + X2 + X3*X4 ε]
 
 ---
 
 ```{r}
-library(tidyverse)
+p <- 
+adv %>% 
+  ggplot(aes(x = tv,
+             y = sales)) +
+  geom_point(colour = "blue", alpha = .8, size = 2) +
+  labs(x = "TV advertisment [1000 Units]",
+       y = "Product Sales [1000 $]")
 
-read_
+p
+```
 
+---
+
+```{r}
+p <- 
+  p +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0)
+  
+p
+```
+
+```{r}
+p_guess <- 
+  p + 
+  geom_vline(xintercept = 140, colour = "red", lty = 2) +
+  annotate(geom = "point", x = 140, y = 0, colour = "red", shape = 4, size = 6)
+
+p_guess
 ```
 
 
