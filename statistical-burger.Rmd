@@ -75,12 +75,13 @@ class: middle
 ```{r}
 adv_fit_poly <- lm(sales ~ poly(tv, 2), data = adv)
 
-adv <- 
-  adv %>% 
-  left_join(broom::augment(adv_fit_poly))
+
+adv_to_plot <- 
+  broom::augment(adv_fit_poly, data = adv)
+
 
 p <- 
-adv %>% 
+adv_to_plot %>% 
   ggplot(aes(x = tv,
              y = sales)) +
   geom_point(colour = "blue", alpha = .8, size = 2) +
@@ -88,6 +89,8 @@ adv %>%
        y = "Product Sales [1000 $]")
 
 p
+# p + geom_segment(aes(xend = ..x..,
+#                      yend = .fitted))
 ```
 
 ---
@@ -98,16 +101,32 @@ p <-
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0)
   
+
 p
+#   geom_smooth(method = "lm", formula = y ~ poly(x, 2)) +
+#   geom_point(aes(y = .fitted))
 ```
 
 ---
 
 ```{r}
+guess_1 <- 140
+guess_2 <- 95
+guess_3 <- 227
+
+annotate_vline <- function(x_val) {
+  geom_vline(xintercept = x_val, colour = "red", lty = 2)
+}
+
+annotate_x <- function(x_val) {
+  annotate(geom = "point", x = x_val, y = 0, colour = "red", shape = 4, size = 6)
+}
+
 p_guess <- 
-  p + 
-  geom_vline(xintercept = 140, colour = "red", lty = 2) +
-  annotate(geom = "point", x = 140, y = 0, colour = "red", shape = 4, size = 6)
+  p +
+  annotate_vline(guess_1) +
+  annotate_x(guess_1)
+  
 
 p_guess
 ```
@@ -115,11 +134,60 @@ p_guess
 ---
 
 ```{r}
-p_guess +
-  annotate(geom = "point", x = 140,
-           y = predict(adv_fit_poly, newdata = tibble(tv = 140)),
-           colour = "red", size = 6) 
+guess_point <- function(x_val, colour = "red") {
+  annotate(geom = "point", x = x_val,
+           y = predict(adv_fit_poly, newdata = tibble(tv = x_val)),
+           colour = colour, size = 6) 
+}
 
+
+p_guess <- p_guess + guess_point(guess_1); p_guess
+```
+
+---
+
+```{r}
+p_guess <- 
+  p_guess +
+  annotate_vline(guess_2) +
+  annotate_x(guess_2)
+
+p_guess
+```
+
+---
+
+```{r}
+p_guess <- p_guess + guess_point(guess_2); p_guess
+```
+
+---
+
+```{r}
+p_guess <- 
+  p_guess +
+  annotate_vline(guess_3) +
+  annotate_x(guess_3)
+
+p_guess
+```
+
+---
+
+```{r}
+p_guess <- p_guess + guess_point(guess_3); p_guess
+```
+
+---
+
+```{r}
+p_guess <- p_guess +
+  geom_smooth(colour = "red",
+              method = "lm",
+              formula = y ~ poly(x, 2),
+              se = FALSE)
+
+p_guess
 ```
 
 
