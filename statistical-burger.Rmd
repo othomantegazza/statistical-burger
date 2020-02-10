@@ -21,7 +21,9 @@ editor_options:
 knitr::opts_chunk$set(dev = "svglite",
                       echo = FALSE,
                       message = FALSE,
-                      warning = FALSE)
+                      warning = FALSE,
+                      fig.height = 6,
+                      fig.width = 10)
 
 library(tidyverse)
 library(ISLR)
@@ -92,6 +94,8 @@ p <-
   
 p
 ```
+
+---
 
 ```{r}
 p_guess <- 
