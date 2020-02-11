@@ -29,6 +29,7 @@ library(tidyverse)
 library(ISLR)
 # library(MASS)
 library(caret)
+library(gridExtra)
 
 theme_set(theme_minimal())
 
@@ -241,6 +242,85 @@ p_out <-
 
 p_out
 ```
+
+---
+
+class: middle
+
+.big[All models are wrong, some are useful.]
+
+---
+
+```{r}
+adv_fit <- lm(sales ~ tv, data = adv)
+
+
+adv_to_plot <- 
+  broom::augment(adv_fit, data = adv)
+
+p <- 
+adv_to_plot %>% 
+  ggplot(aes(x = tv,
+             y = sales)) +
+  geom_point(colour = "blue", alpha = .8, size = 2) +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  labs(x = "TV advertisment [1000 Units]",
+       y = "Product Sales [1000 $]")
+
+p <- 
+  p +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, colour = "red") +
+  annotate(geom = "text", x = 10,
+           y = 25, label = "y ~ x",
+           vjust = 0, hjust = 0,
+           size = 10,
+           colour = "red")
+
+p
+```
+
+---
+
+```{r}
+p <- 
+  p +
+  geom_segment(aes(xend = ..x..,
+                   yend = .fitted),
+               size = .3,
+               colour = "grey40") 
+```
+
+---
+
+```{r}
+fit_table <-
+  adv_fit %>%
+  broom::tidy() %>%
+  gridExtra::tableGrob(
+    theme = ttheme_minimal(base_colour = "blue",
+                           base_size = 10)
+    ) 
+
+
++
+  annotation_custom(grob = fit_table,
+                    xmin = 150,
+                    ymax = 8)
+```
+
+---
+
+```{r}
+
+```
+
+---
+
+```{r}
+
+```
+
 
 
 https://www.kaggle.com/tags/food-and-drink 

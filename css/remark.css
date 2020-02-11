@@ -189,3 +189,7 @@ th, td { padding: 5px; }
   font-style: italic;
   vertical-align: middle;
 }
+
+.big {
+  font-size: 70px;
+}
