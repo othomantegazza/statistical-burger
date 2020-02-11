@@ -85,21 +85,10 @@ adv_to_plot %>%
   ggplot(aes(x = tv,
              y = sales)) +
   geom_point(colour = "blue", alpha = .8, size = 2) +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
   labs(x = "TV advertisment [1000 Units]",
        y = "Product Sales [1000 $]")
-
-p
-# p + geom_segment(aes(xend = ..x..,
-#                      yend = .fitted))
-```
-
----
-
-```{r}
-p <- 
-  p +
-  geom_hline(yintercept = 0) +
-  geom_vline(xintercept = 0)
   
 
 p
@@ -181,13 +170,76 @@ p_guess <- p_guess + guess_point(guess_3); p_guess
 ---
 
 ```{r}
-p_guess <- p_guess +
+p_guess <-
+  p_guess +
   geom_smooth(colour = "red",
               method = "lm",
               formula = y ~ poly(x, 2),
               se = FALSE)
 
 p_guess
+```
+
+---
+
+```{r}
+p
+```
+
+---
+
+```{r}
+p_out <-
+  p +
+  annotate_vline(guess_3) +
+  annotate_x(guess_3) +
+  guess_point(guess_3)
+
+
+p_out
+```
+
+---
+
+```{r}
+force_point <- function(x_val,y_val, colour = "red") {
+  annotate(geom = "point", x = x_val,
+           y = y_val,
+           colour = colour, size = 6) 
+}
+
+p_out <- 
+  p_out +
+  annotate_vline(guess_1) +
+  annotate_x(guess_1) +
+  force_point(x_val = guess_1, y_val = 18.5)
+
+p_out
+```
+
+---
+
+```{r}
+p_out <- 
+  p_out +
+  annotate_vline(guess_2) +
+  annotate_x(guess_2) +
+  force_point(x_val = guess_2, y_val = 25)
+
+p_out
+```
+
+---
+
+```{r}
+p_out <-
+  p_out +
+  geom_smooth(colour = "red",
+              method = "lm",
+              formula = y ~ poly(x, 2),
+              se = FALSE)
+
+p_out
 ```
 
 
