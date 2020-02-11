@@ -289,6 +289,8 @@ p <-
                    yend = .fitted),
                size = .3,
                colour = "grey40") 
+
+p
 ```
 
 ---
@@ -303,24 +305,154 @@ fit_table <-
     ) 
 
 
-+
+p <- 
+  p +
   annotation_custom(grob = fit_table,
                     xmin = 150,
                     ymax = 8)
+
+p
 ```
 
 ---
 
 ```{r}
+fit_scores <-
+  adv_fit %>%
+  broom::glance() %>%
+  select(1:5) %>% 
+  mutate_all(~format(., scientific = TRUE, digits = 2)) %>% 
+  gridExtra::tableGrob(
+    theme = ttheme_minimal(base_colour = "blue",
+                           base_size = 10)
+    ) 
 
+p <- 
+  p +
+  annotation_custom(grob = fit_scores,
+                    xmin = 150,
+                    ymax = 17)
+
+p
 ```
 
 ---
 
 ```{r}
+p <- 
+adv_to_plot %>% 
+  ggplot(aes(x = tv,
+             y = .resid)) +
+  geom_point(colour = "blue", alpha = .8, size = 2) +
+  geom_hline(yintercept = 0, colour = "red") +
+  geom_vline(xintercept = 0) +
+  geom_segment(aes(xend = ..x..,
+                   yend = 0),
+               size = .3,
+               colour = "grey40") +
+  labs(x = "TV advertisment [1000 Units]",
+       y = "Product Sales [1000 $]")
 
+p
 ```
 
+---
+
+```{r}
+income <- read_csv(here::here("data/income1.csv")) %>% janitor::clean_names()
+```
+
+```{r}
+p <- 
+income %>% 
+  ggplot(aes(x = education,
+             y = income)) +
+  geom_point(colour = "blue", alpha = .8, size = 2) +
+  lims(y = c(11, 90), x = c(9, 22.5)) +
+  coord_fixed(ratio = .16)
+
+p 
+```
+
+---
+
+```{r}
+p +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, colour = "red")
+```
+
+---
+
+```{r}
+p +
+  geom_smooth(method = "lm", formula = y ~ poly(x, 3), se = FALSE, colour = "red")
+```
+
+---
+
+```{r}
+p +
+  geom_smooth(method = "loess", se = FALSE, span  = .1, colour = "red")
+```
+
+---
+
+class: middle
+
+.big[What if the outcome is categorical?]
+
+---
+
+```{r}
+data(ISLR::Default)
+credit <- Default %>% janitor::clean_names()
+```
+
+```{r}
+p <- 
+  credit %>% 
+  ggplot(aes(x = default, y = balance)) +
+  geom_violin()
+
+p
+```
+
+---
+
+```{r}
+p + coord_flip()
+```
+
+---
+
+```{r}
+credit <- 
+  credit %>% as_tibble() %>% 
+  mutate(default = as.factor(default) %>% as.numeric(),
+         default = default - 1) 
+
+
+
+p <- 
+  credit %>% 
+  ggplot(aes(x = balance, y = default)) +
+  geom_text(label = "|", colour = "blue", 
+            alpha = .4)
+
+p
+```
+
+---
+
+```{r}
+fit <- glm(default ~ balance, data = credit, family = "binomial")
+
+p +
+  geom_smooth(method = "glm",
+              method.args = list(family = "binomial"),
+              se = FALSE,
+              colour = "red")
+```
 
 
 https://www.kaggle.com/tags/food-and-drink 
