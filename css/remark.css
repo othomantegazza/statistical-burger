@@ -89,6 +89,11 @@ th, td { padding: 5px; }
 
 /* Normal slide */
 
+
+.remark-slide-content {
+  font-size: 25px; 
+}
+
 .remark-slide-content h1 {
   font-size: 40px;
 }
@@ -111,8 +116,11 @@ th, td { padding: 5px; }
 }
 
 .title-acc h1 {
+  position: absolute; 
+  top: 200px;
+  left: 80px;
   text-align: left;
-  font-size: 50px;
+  font-size: 70px;
   margin-bottom: 20px;
   margin-left: 50px;
 }
@@ -125,6 +133,9 @@ th, td { padding: 5px; }
 }
 
 .title-acc h3 {
+  position: absolute; 
+  top: 400px;
+  left: 80px;
   margin-left: 55px;
   font-size: 24px;
   text-align: left;
@@ -184,8 +195,7 @@ th, td { padding: 5px; }
 /* text classes --------------------------- */
 
 .big-formula {
-  font-size: 100px;
-  font-family: 'Playfair Display', serif;
+  font-size: 80px;
   font-style: italic;
   vertical-align: middle;
 }

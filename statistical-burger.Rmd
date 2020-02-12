@@ -30,6 +30,7 @@ library(ISLR)
 # library(MASS)
 library(caret)
 library(gridExtra)
+library(rsample)
 
 theme_set(theme_minimal())
 
@@ -44,9 +45,15 @@ class: title-acc
 
 # Statistical Burger
 
-## Statistical Learning with Food
-
 ### Otho
+
+---
+
+class: middle
+
+# Statistical Learning
+
+A set of tools and practices to model and extract informations from a complex dataset.
 
 ---
 
@@ -54,26 +61,27 @@ class: middle
 
 .big-formula[Y ~ X]
 
+--
+
+.big-formula[Y ~ X<sub>1</sub> + X<sub>2</sub>]
+
+--
+
+.big-formula[Y ~ X<sub>1</sub> + X<sub>2</sub> + X<sub>1</sub>*X<sub>2</sub>]
+
 ---
 
 class: middle
 
-.big-formula[Y ~ X + ε]
+.big-formula[Y = β<sub>0</sub> + β<sub>1</sub>X + ε]
+
+--
+
+.big-formula[Y = β<sub>0</sub> + β<sub>1</sub>X + β<sub>2</sub>X<sub>1</sub>X<sub>2</sub> + ε]
 
 ---
 
-class: middle
-
-.big-formula[Y ~ X1 + X2 + ε]
-
----
-class: middle
-
-.big-formula[Y ~ X1 + X2 + X3*X4 ε]
-
----
-
-```{r}
+```{r first_plot_adv}
 adv_fit_poly <- lm(sales ~ poly(tv, 2), data = adv)
 
 
@@ -88,8 +96,8 @@ adv_to_plot %>%
   geom_point(colour = "blue", alpha = .8, size = 2) +
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
-  labs(x = "TV advertisment [1000 Units]",
-       y = "Product Sales [1000 $]")
+  labs(x = "TV advertisment [1000 $]",
+       y = "Product Sales [1000 Units]")
   
 
 p
@@ -112,6 +120,8 @@ annotate_x <- function(x_val) {
   annotate(geom = "point", x = x_val, y = 0, colour = "red", shape = 4, size = 6)
 }
 
+
+
 p_guess <- 
   p +
   annotate_vline(guess_1) +
@@ -130,6 +140,16 @@ guess_point <- function(x_val, colour = "red") {
            colour = colour, size = 6) 
 }
 
+guess_hline <- function(x_val) {
+  geom_hline(yintercept = predict(adv_fit_poly, newdata = tibble(tv = x_val)),
+             colour = "red", lty = 2)
+}
+
+guess_y <- function(x_val) {
+  annotate(geom = "point", x = 0,
+           y = predict(adv_fit_poly, newdata = tibble(tv = x_val)),
+           colour = "red", shape = 4, size = 6)
+}
 
 p_guess <- p_guess + guess_point(guess_1); p_guess
 ```
@@ -265,8 +285,8 @@ adv_to_plot %>%
   geom_point(colour = "blue", alpha = .8, size = 2) +
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
-  labs(x = "TV advertisment [1000 Units]",
-       y = "Product Sales [1000 $]")
+  labs(x = "TV advertisment [1000 $]",
+       y = "Product Sales [1000 Units]")
 
 p <- 
   p +
@@ -288,8 +308,21 @@ p <-
   geom_segment(aes(xend = ..x..,
                    yend = .fitted),
                size = .3,
-               colour = "grey40") 
+               colour = "grey40")
 
+p
+```
+
+---
+
+```{r}
+p <- 
+  p + 
+    annotate(geom = "text", x = 10,
+           y = 22, label = "y = 7.03 + 0.04 * x",
+           vjust = 0, hjust = 0,
+           size = 8,
+           colour = "red")
 p
 ```
 
@@ -369,7 +402,9 @@ income %>%
              y = income)) +
   geom_point(colour = "blue", alpha = .8, size = 2) +
   lims(y = c(11, 90), x = c(9, 22.5)) +
-  coord_fixed(ratio = .16)
+  coord_fixed(ratio = .16) +
+  labs(x = "Years of Education",
+       y = "Income")
 
 p 
 ```
@@ -378,21 +413,78 @@ p
 
 ```{r}
 p +
-  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, colour = "red")
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE, colour = "red") +
+  annotate(geom = "text", x = 10,
+           y = 75, label = "Linear Fit",
+           vjust = 0, hjust = 0,
+           size = 6,
+           colour = "red")
 ```
 
 ---
 
 ```{r}
 p +
-  geom_smooth(method = "lm", formula = y ~ poly(x, 3), se = FALSE, colour = "red")
+  geom_smooth(method = "lm", formula = y ~ poly(x, 3), se = FALSE, colour = "red") +
+    annotate(geom = "text", x = 10,
+           y = 75, label = "Polynomial Fit",
+           vjust = 0, hjust = 0,
+           size = 6,
+           colour = "red")
 ```
 
 ---
 
 ```{r}
 p +
-  geom_smooth(method = "loess", se = FALSE, span  = .1, colour = "red")
+  geom_smooth(method = "loess", se = FALSE, span  = .1, colour = "red") +
+    annotate(geom = "text", x = 10,
+           y = 75, label = "LOESS Fit",
+           vjust = 0, hjust = 0,
+           size = 6,
+           colour = "red")
+```
+
+---
+
+class: middle
+
+.big[Which model is useful?]
+
+---
+
+```{r initial_split}
+set.seed(46)
+
+adv_split <- 
+  adv %>% 
+  rsample::initial_split(prop = .6) 
+
+adv$set <- "test"
+adv[adv_split$in_id, "set"] <- "train"
+
+adv <- adv %>% mutate(set = factor(set, levels = c("train", "test")))
+```
+
+```{r}
+p <- 
+  adv %>% 
+  ggplot(aes(x = tv,
+             y = sales)) +
+  geom_point(colour = "blue", alpha = .8, size = 2) +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  labs(x = "TV advertisment [1000 $]",
+       y = "Product Sales [1000 Units]")
+
+p
+```
+
+---
+
+```{r show_2_sets}
+p +
+  facet_grid(.~ set)
 ```
 
 ---
