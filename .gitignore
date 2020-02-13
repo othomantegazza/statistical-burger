@@ -1,7 +1,7 @@
 libs/*
-statistical-burger_files/*
+# statistical-burger_files/*
 data/*
 
-*.html
+# *.html
 
 .Rproj.user
