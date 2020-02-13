@@ -456,29 +456,46 @@ class: middle
 ```{r initial_split}
 set.seed(46)
 
-adv_split <- 
-  adv %>% 
+data(Auto)
+
+auto <- Auto %>% janitor::clean_names() %>% as_tibble()
+
+auto_split <- 
+  auto %>% 
   rsample::initial_split(prop = .6) 
 
-adv$set <- "test"
-adv[adv_split$in_id, "set"] <- "train"
+auto$set <- "test"
+auto[auto_split$in_id, "set"] <- "train"
 
-adv <- adv %>% mutate(set = factor(set, levels = c("train", "test")))
+auto <- auto %>% mutate(set = factor(set, levels = c("train", "test")))
 ```
 
 ```{r}
 p <- 
-  adv %>% 
-  ggplot(aes(x = tv,
-             y = sales)) +
-  geom_point(colour = "blue", alpha = .8, size = 2) +
+  auto %>% 
+  ggplot(aes(x = horsepower,
+             y = mpg)) +
   geom_hline(yintercept = 0) +
   geom_vline(xintercept = 0) +
-  labs(x = "TV advertisment [1000 $]",
-       y = "Product Sales [1000 Units]")
+  labs(x = "Horsepower",
+       y = "Miles per Gallon")
+
+p +
+  geom_point(colour = "blue", alpha = .8, size = 2) 
+```
+
+---
+
+```{r}
+p <- 
+  p +
+  geom_point(aes(colour = set), alpha = .8, size = 2) +
+  scale_color_manual(values = c("blue", "purple")) +
+  guides(colour = FALSE)
 
 p
 ```
+
 
 ---
 
@@ -486,6 +503,92 @@ p
 p +
   facet_grid(.~ set)
 ```
+
+---
+
+```{r predict}
+auto_train <- training(auto_split) 
+auto_test <- testing(auto_split) 
+
+
+fits <- 
+  map(c(1,3,7),
+      ~ lm(mpg ~ poly(horsepower, .), data = auto_train)
+    )
+
+fit_training_rse <- 
+  map_df(fits, broom::glance) %>% 
+  mutate(poly = c(1, 3, 7),
+         rse = sigma) %>% 
+  select(poly, rse) %>% 
+  mutate(set = "train")
+  
+
+preds <- 
+    auto_test %>% 
+    mutate(pred_1 = predict(fits[[1]], auto_test),
+           pred_3 = predict(fits[[2]], auto_test),
+           pred_7 = predict(fits[[3]], auto_test))
+
+get_rmse <- function(colz = pred_1) {
+  colz <- enquo(colz)
+  yardstick::metrics(preds, truth = mpg, estimate = !!colz) %>%
+  filter(.metric == "rmse") %>%
+  pull(.estimate)
+}
+
+
+fit_test_rse <- 
+  tribble(~poly, ~rse,
+        1, get_rmse(pred_1),
+        3, get_rmse(pred_3),
+        7, get_rmse(pred_7)) %>% 
+  mutate(set = "test")
+
+fit_rse <- bind_rows(fit_training_rse, fit_test_rse)
+
+p <- 
+  auto_train %>% 
+  ggplot(aes(x = horsepower,
+             y = mpg)) +
+  geom_point(colour = "blue", alpha = .8, size = 2)  +
+  geom_hline(yintercept = 0) +
+  geom_vline(xintercept = 0) +
+  labs(x = "Horsepower",
+       y = "Miles per Gallon")
+
+p + geom_smooth(method = "lm", formula = y ~ poly(x, 1), se = FALSE,
+                colour = "red")
+```
+
+---
+
+```{r}
+p + geom_smooth(method = "lm", formula = y ~ poly(x, 3), se = FALSE,
+                colour = "red")
+```
+
+---
+
+```{r}
+p + geom_smooth(method = "lm", formula = y ~ poly(x, 7), se = FALSE,
+                colour = "red")
+```
+
+---
+
+```{r}
+fit_rse %>% 
+  ggplot(aes(x = poly,
+             y  = rse,
+             colour = set,
+             group = set)) +
+  geom_line() +
+  geom_point() +
+  scale_color_manual(values = c("purple", "blue")) +
+  labs(title = "residuals standard errors")
+```
+
 
 ---
 
@@ -574,7 +677,7 @@ p <-
            label = "0 = Credit OK",
            size = 6,
            colour = "red") +
-  lims(y = c(-.2, 1.2)) + 
+  lims(y = c(-.1, 1.2)) + 
   labs(x = "Credit Card Balance [$]",
        y = "Credit Card Default [p]")
 
@@ -605,7 +708,7 @@ p <-
            label = "0 = Credit OK",
            size = 6,
            colour = "red") +
-  lims(y = c(-.2, 1.2)) + 
+  lims(y = c(-.1, 1.2)) + 
   labs(x = "Credit Card Balance [$]",
        y = "Credit Card Default [p]")
 
