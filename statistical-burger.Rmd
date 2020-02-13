@@ -495,32 +495,61 @@ class: middle
 
 ---
 
-```{r}
-data(ISLR::Default)
-credit <- Default %>% janitor::clean_names()
+```{r load_categorical}
+data(Default)
+credit <- Default %>%
+  janitor::clean_names() %>% 
+  mutate(default = default %>% {case_when(. == "No" ~ "OK",
+                                          TRUE ~ "Credit Default")})
 ```
 
 ```{r}
 p <- 
   credit %>% 
-  ggplot(aes(x = default, y = balance)) +
-  geom_violin()
+  ggplot(aes(x = balance)) +
+  geom_histogram(colour = "blue", fill = "blue", alpha = .7) +
+  geom_hline(yintercept = 0) +
+  labs(x = "Balance [$]",
+       y = "Count [n]")
 
 p
 ```
 
 ---
 
-```{r}
-p + coord_flip()
+```{r credit_histogram}
+p + facet_grid(default ~ .)
+```
+
+---
+
+```{r credit_density}
+p_dens <- 
+  credit %>% 
+  ggplot(aes(x = balance)) +
+  geom_density(colour = "blue", fill = "blue", alpha = .7) +
+  geom_hline(yintercept = 0) +
+  labs(x = "Balance [$]",
+       y = "Relative Density") +
+  facet_grid(default ~ .)
+
+p_dens
 ```
 
 ---
 
 ```{r}
+p_dens +
+  geom_rug()
+```
+
+---
+
+
+```{r}
 credit <- 
   credit %>% as_tibble() %>% 
-  mutate(default = as.factor(default) %>% as.numeric(),
+  mutate(default = as_factor(default) %>% as.numeric(),
          default = default - 1) 
 
 
@@ -528,11 +557,71 @@ credit <-
 p <- 
   credit %>% 
   ggplot(aes(x = balance, y = default)) +
-  geom_text(label = "|", colour = "blue", 
-            alpha = .4)
+  geom_segment(aes(xend = ..x..,
+                   yend = ..y.. + .1),
+               colour = "blue", 
+            alpha = .4) + 
+  geom_hline(yintercept = c(0, 1)) + 
+  annotate(geom = "text", x = 0, y = 1,
+           vjust = 1.3,
+           hjust = 0,
+           size = 6,
+           label = "1 = Credit Default",
+           colour = "red") +
+    annotate(geom = "text", x = 0, y = 0,
+           vjust = 1.3,
+           hjust = 0,
+           label = "0 = Credit OK",
+           size = 6,
+           colour = "red") +
+  lims(y = c(-.2, 1.2)) + 
+  labs(x = "Credit Card Balance [$]",
+       y = "Credit Card Default [p]")
+
 
 p
 ```
+
+---
+
+```{r}
+p <- 
+  credit %>% 
+  ggplot(aes(x = balance, y = default)) +
+  geom_segment(aes(xend = ..x..,
+                   yend = ..y.. + .1),
+               colour = "#8597ff", 
+            alpha = .4) + 
+  geom_hline(yintercept = c(0, 1)) + 
+  annotate(geom = "text", x = 0, y = 1,
+           vjust = 1.3,
+           hjust = 0,
+           size = 6,
+           label = "1 = Credit Default",
+           colour = "red") +
+    annotate(geom = "text", x = 0, y = 0,
+           vjust = 1.3,
+           hjust = 0,
+           label = "0 = Credit OK",
+           size = 6,
+           colour = "red") +
+  lims(y = c(-.2, 1.2)) + 
+  labs(x = "Credit Card Balance [$]",
+       y = "Credit Card Default [p]")
+
+p +
+  geom_smooth(method = "lm",
+              # method.args = list(family = "binomial"),
+              se = FALSE,
+              colour = "red") +
+    annotate(geom = "text", x = 0, y = 1.2,
+           vjust = 1.2,
+           hjust = 0,
+           label = "Linear regression",
+           size = 5,
+           colour = "red") 
+```
+
 
 ---
 
@@ -543,8 +632,21 @@ p +
   geom_smooth(method = "glm",
               method.args = list(family = "binomial"),
               se = FALSE,
-              colour = "red")
+              colour = "red") +
+    annotate(geom = "text", x = 0, y = 1.2,
+           vjust = 1.2,
+           hjust = 0,
+           label = "Logistic regression",
+           size = 5,
+           colour = "red") 
 ```
 
+---
 
-https://www.kaggle.com/tags/food-and-drink 
+class: middle
+
+# Thank you!
+
+- [Introduction to Statistical Learning in R](http://faculty.marshall.usc.edu/gareth-james/ISL/),
+- [Supervised Machine Learning in R](https://supervised-ml-course.netlify.com/),
+- [Elements of Statistical Learning](https://web.stanford.edu/~hastie/ElemStatLearn/)
