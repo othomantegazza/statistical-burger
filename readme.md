@@ -1,4 +1,4 @@
-# View Slides
+# Slides
 
 https://othomantegazza.github.io/statistical-burger/statistical-burger.html
 
